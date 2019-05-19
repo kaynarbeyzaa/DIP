@@ -1,0 +1,36 @@
+
+import numpy as np
+import cv2
+
+cam = cv2.VideoCapture(0)
+
+while True:
+    ret,frame = cam.read()
+
+    gray = cv2.cvtColor(frame,cv2.COLOR_BGR2GRAY)
+
+    obj = cv2.imread ("goruntu.jpg",0)
+
+    weight,height = obj.shape
+
+    res = cv2.matchTemplate(gray,obj,cv2.TM_CCOEFF_NORMED)
+    #griye dönüşen kareyle objeyi kıyaslar
+
+    value = 0.8 #eşik değeri
+
+    loc = np.where(res>value) #pixellerin benzerliğine bakılıyor
+
+    for n in zip(*loc[::-1]): #x ve y parametrelerini ziple birleştirdik
+        cv2.rectangle(frame,n,(n[0]+height,n[1]+weight),(0,255,0),2)
+        #point 1 yani 'n' bizim x y değerimiz
+        #point 2 iste objemizin genişlik ve yükselkiği
+
+    cv2.imshow("Frame",frame)
+
+    if cv2.waitKey(25) & 0xFF == ord('q'):
+        # her 25 milisaniyede bir kare alıp video oluşturur
+        #q'ya tıkladığımızda program kapanır
+        break
+
+cam.release()
+cv2.destroyAllWindows()
